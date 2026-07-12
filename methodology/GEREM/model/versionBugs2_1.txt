@@ -1,0 +1,129 @@
+model{
+for (zone in 1:nbzone){
+# 	weightZone[zone,1]<-pow(surfaceallbv[zone,1],beta)
+#	for (bv in 2:nbmaxbv){
+#		weightZone[zone,bv]<-weightZone[zone,bv-1]+pow(surfaceallbv[zone,bv],beta)
+#	}
+	weightZone[zone]<-sum(pow(surfaceallbv[zone,],beta))
+}
+for (bv in 1:nbbv){
+	weight[bv]<-pow(surface[bv],beta)/weightZone[zonebv[bv]]
+}
+logRglobal[1]<-logR1
+Rglobal[1]<-exp(logRglobal[1])
+for (zone in 1:(nbzone)){
+#	Rzonepred[1,zone]<-Rglobal[1]*propR[zone]
+#	sdRzone[1,zone]<-sqrt((0.000001+Rglobal[1])*(0.000001+propR[zone])*(.999999999999-propR[zone]))
+#	Rzone[1,zone]<-max(0.000000001,Rzonepred[1,zone]+epsilonRzone[(1-1)*nbzone+zone]*sdRzone[1,zone]) #troncature pour éviter des log de 00
+Rzone[1,zone]<-Rglobal[1]*propR[zone,1]
+}
+for (bv in 1:nbbv){
+	Rbvpred[1,bv]<-Rzone[1,zonebv[bv]]*weight[bv]
+	sdRbv[1,bv]<-sqrt((0.000001+Rzone[1,zonebv[bv]])*(0.000001+weight[bv])*(.999999999999-weight[bv]))
+	Rbv[1,bv]<-max(0.000000001,Rbvpred[1,bv]+epsilonRbv[(1-1)*nbbv+bv]*sdRbv[1,bv]) #troncature pour éviter des log de 0
+}
+
+for (annee in 2:nbyear){
+	mulogRglobal[annee]<-logRglobal[annee-1]
+	logRglobal[annee]<-mulogRglobal[annee]+epsilonR[annee]*sdRwalk
+	Rglobal[annee]<-exp(logRglobal[annee])
+	for (zone in 1:(nbzone)){
+#		Rzonepred[annee,zone]<-Rglobal[annee]*propR[zone]
+#		sdRzone[annee,zone]<-sqrt((0.000001+Rglobal[annee])*(0.000001+propR[zone])*(.999999999999-propR[zone]))
+#		Rzone[annee,zone]<-max(0.000000001,Rzonepred[annee,zone]+epsilonRzone[(annee-1)*nbzone+zone]*sdRzone[annee,zone]) #troncature pour éviter des log de 0
+Rzone[annee,zone]<-propR[zone,annee]*Rglobal[annee]
+	}
+	for (bv in 1:nbbv){
+		Rbvpred[annee,bv]<-Rzone[annee,zonebv[bv]]*weight[bv]
+		sdRbv[annee,bv]<-sqrt((0.000001+Rzone[annee,zonebv[bv]])*(0.000001+weight[bv])*(.999999999999-weight[bv]))
+		Rbv[annee,bv]<-max(0.000000001,Rbvpred[annee,bv]+epsilonRbv[(annee-1)*nbbv+bv]*sdRbv[annee,bv]) #troncature pour éviter des log de 0
+	}
+}
+for (zone in 1:nbzone){
+	Rzone_final[zone]<-Rzone[nbyear,zone]
+	alpha[zone]<-initpropR[zone]*precisionpropRwalk+0.01
+}
+
+
+for (annee in 1:nbyear){
+	for (isurvey in 1:nbsurvey){
+	########on doit connaitre: capturabilité du survey q[survey], la surface du bv bvsurvey[survey]
+	########  
+		logIApred[annee,isurvey]<-logq[isurvey]+log(Rbv[annee,bvsurvey[isurvey]])-0.5/tauIA[isurvey]
+		logIAObs[annee,isurvey]~dnorm(logIApred[annee,isurvey],tauIA[isurvey])
+	}
+	for (ipiege in 1:nbpiege){
+	########on doit connaître l'efficacité du piège
+	logIPpred[annee,ipiege]<-loga[ipiege]+log(Rbv[annee,bvpiege[ipiege]])-0.5/tauIP[ipiege]
+	logIPObs[annee,ipiege]~dnorm(logIPpred[annee,ipiege],tauIP[ipiege])
+	}
+	
+	for (iexpert in 1:nbexpert){
+	########on doit connaître l'efficacité du piège
+	logIEpred[annee,iexpert]<-logp[iexpert]+log(Rbv[annee,bvexpert[iexpert]])-0.5/tauIE[iexpert]
+	logIEObs[annee,iexpert]~dnorm(logIEpred[annee,iexpert],tauIE[iexpert])
+	}
+	
+	for (icomptage in 1:nbcomptage){
+		########on doit connaitre: pareil qu avant mais sans capturabilité
+		logUpred[annee,icomptage]<-log(Rbv[annee,bvcomptage[icomptage]])-0.5/tauU[icomptage]
+		logUObs[annee,icomptage]~dnorm(logUpred[annee,icomptage],tauU[icomptage])
+	}
+}
+beta~dunif(0.01,2)
+propR[1:nbzone,1]~ddirich(alpha[1:nbzone])
+for (annee in 2:nbyear){
+propR[1:nbzone,annee]~ddirich(lambda*propR[1:nbzone,annee-1])
+}
+lambda<-60
+
+for (y in 1:(nbbv*nbyear)){
+	epsilonRbv[y]~dnorm(0,1)
+}
+for (y in 1:(nbzone*nbyear)){
+	epsilonRzone[y]~dnorm(0,1)
+}
+for (y in 1:nbyear){
+	epsilonR[y]~dnorm(0,1)
+}
+logR1~dunif(14,17)
+for (survey in 1:nbsurvey){
+	logq[survey]~dunif(-13,0)
+}
+for (piege in 1:nbpiege){
+loga[piege]~dunif(-2.3,-0.7)
+}
+for (expert in 1:nbexpert){
+logp[expert]~dunif(-0.43,-0.16)
+}
+iprecision~dgamma(2,1)T(1,2)
+precisionpropRwalk<-1/iprecision
+#precisionpropRwalk~dunif(0.5,1)
+
+
+
+tauRglob~dgamma(2,1)T(1,15)
+sdRglob<-1/sqrt(tauRglob)
+for (isurvey in 1:nbsurvey){
+	tauIA[isurvey]~dgamma(2,1)T(1,15)
+	sdIA[isurvey]<-1/sqrt(tauIA[isurvey])
+}
+for (ipiege in 1:nbpiege){
+ tauIP[ipiege]~dgamma(2,1)T(1,15)
+ sdIP[ipiege]<-1/sqrt(tauIP[ipiege])
+}
+
+for (icomptage in 1:nbcomptage){
+	tauU[icomptage]~dgamma(2,1)T(1,15)
+	sdU[icomptage]<-1/sqrt(tauU[icomptage])
+}
+for (iexpert in 1:nbexpert){
+	tauIE[iexpert]~dgamma(2,1)T(1,15)
+	sdIE[iexpert]<-1/sqrt(tauIE[iexpert])
+}
+
+
+tauq~dgamma(2,1)T(1,15)
+tauRwalk~dgamma(2,1)T(1,15)
+sdRwalk<-1/sqrt(tauRwalk)
+}

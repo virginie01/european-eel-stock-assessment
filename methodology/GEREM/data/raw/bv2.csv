@@ -1,0 +1,42 @@
+index,type,zone,bv,surface,debit
+Adour Estuary commercial catch,relative,ATL_F,Adour,16860,166.2
+Adour Estuary (CPUE) commercial CPUE,relative,ATL_F,Adour,16860,166.2
+Albufera de Valencia commercial catch,relative,Med,Albufera lagoon,917,3
+Bann trapping partial,trap,BI,Bann,4450,100
+Bresle trapping all,trap,Manche,Bresle,743,7.5
+Ebro commercial catch,relative,Med,Ebro,85924,425
+Ems commercial catch,relative,NS,Ems,12185.1,80
+Erne trapping all,trap,BI,Erne,4000,100
+Fremur trapping all,trap,Manche,Fremur,60,0.17
+Gironde Estuary commercial catch,relative,ATL_F,Gironde,79605,515.2
+Ijzer Nieuwpoort scientific estimate,relative,NS,Ijzer,1101,5.5
+Imsa Near Sandnes trapping all,trap,NS,Imsa,128,5.4
+IYFS1 scientific estimate,relative,NS,North sea,2133000,NA
+IYFS2 scientific estimate,relative,NS,North sea,2133000,NA
+Katwijk scientific estimate,relative,NS,Rhine,170000,1187
+Lauwersoog scientific estimate,relative,NS,Rhine,170000,1187
+Loire commercial catch,relative,ATL_F,Loire,116981,561
+Minho commercial catch,relative,ATL_IB,Minho,17080,305
+Nalon commercial catch,relative,ATL_IB,Nalon,4866,109
+Rhine DenOever scientific estimate,relative,NS,Rhine,170000,1187
+Ringhals scientific survey,relative,NS,Kattegat-Skagerrak,2133000,NA
+River Feale,trap,BI,Feale,1153,21
+River Inagh,trap,BI,Inagh,4550,1
+River Maigue,trap,BI,Maigue,1075,NA
+Severn commercial catch,relative,Manche,Severn,11381,61
+Sevre Niortaise Estuary commercial CPUE,relative,ATL_F,Sèvres Niortaise,3650,44.4
+Shannon trapping all,trap,BI,Shannon,11700,176
+Stellendam scientific estimate,relative,NS,Rhine,170000,1187
+Tiber commercial catch,relative,Med,Tiber,17861,125.37
+Vida commercial catch,relative,NS,Vida,1386.7,18
+Vilaine Arzal trapping all,absolute,ATL_F,Vilaine,10490,68.6
+Viskan Sluices trapping all,trap,NS,Viskan,2202,43.28
+AdGERMA,absolute,ATL_F,Adour,16860,166.2
+GiGEMAC,absolute,ATL_F,Gironde,79605,515.247
+SeGEMAC,absolute,ATL_F,Seudre,754.6,7.89
+ChGEMAC,absolute,ATL_F,Charente,9526,76.17
+LoGERMA,absolute,ATL_F,Loire,116981,561
+Vaccares,trap,Med,Vaccares,456,3.3
+Tiber,absolute,Med,Tiber,17861,125.37
+Oria,absolute,ATL_IB,Oria,863.4,15
+Somme,expertise,NS,Somme,6223.4,33.25
